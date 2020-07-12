@@ -34,41 +34,32 @@
 class HelloWorld : public cocos2d::Scene
 {
 private:
-	cocos2d::Sprite* _sprite1 = nullptr;
-	cocos2d::Sprite* _sprite2 = nullptr;
-	cocos2d::Sprite* _sprite3 = nullptr;
+    cocos2d::Sprite* _sprite1 = nullptr;
+    cocos2d::Sprite* _sprite2 = nullptr;
+    cocos2d::Sprite* _sprite3 = nullptr;
+    
     cocos2d::Sprite* _spriteToCollide = nullptr;
-
-	cocos2d::Vector<cocos2d::Sprite*> _v_sprites = cocos2d::Vector<cocos2d::Sprite*>(2);
-
-	cocos2d::ui::Button* _button1 = nullptr;
-	cocos2d::ui::Button* _button2 = nullptr;
-	cocos2d::ui::Button* _button3 = nullptr;
-
-
+    
+    cocos2d::Vector<cocos2d::Sprite*> _v_sprites = cocos2d::Vector<cocos2d::Sprite*>(2);
+    
 public:
     static cocos2d::Scene* createScene();
-
+    
     virtual bool init();
     
-
-    bool onTouchBegan(cocos2d::Touch*, cocos2d::Event*);
-    void onTouchEnded(cocos2d::Touch*, cocos2d::Event*);
-    void onTouchMoved(cocos2d::Touch*, cocos2d::Event*);
+    void on1ButtonPressed(cocos2d::Ref* sender, cocos2d::ui::Widget::TouchEventType type);
+    void on2ButtonPressed(cocos2d::Ref* sender, cocos2d::ui::Widget::TouchEventType type);
+    void on3ButtonPressed(cocos2d::Ref* sender, cocos2d::ui::Widget::TouchEventType type);
+    void onQuitButtonPressed(cocos2d::Ref* sender, cocos2d::ui::Widget::TouchEventType type);
+    
+    bool on3SpriteTouchBegan(cocos2d::Touch*, cocos2d::Event*);
+    void on3SpriteTouchMoved(cocos2d::Touch*, cocos2d::Event*);
+    void on3SpriteTouchEnded(cocos2d::Touch*, cocos2d::Event*);
 
     bool calculateCollision(cocos2d::Sprite* spriteToMove, cocos2d::Sprite* spriteToCheck, cocos2d::Vec2& newPosition,
-        const std::array<cocos2d::Vec2, 4>& spriteToMoveVerts, cocos2d::Vec2 delta, int vertexToMove);
+        const std::array<cocos2d::Vec2, 4>& spriteToMoveVerts, cocos2d::Vec2 delta, int prominentVertex);
     cocos2d::Vec2 checkCollision(cocos2d::Sprite* spriteToMove, cocos2d::Vec2 newPosition);
-
-
-
-
-
-
-    // a selector callback
-    void menuCloseCallback(cocos2d::Ref* pSender);
     
-    // implement the "static create()" method manually
     CREATE_FUNC(HelloWorld);
 };
 

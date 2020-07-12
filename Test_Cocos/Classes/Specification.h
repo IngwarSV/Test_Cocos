@@ -4,7 +4,6 @@
 #include <string>
 
 
-
 namespace DEF_SETT {
 	// Main fonts
 	const std::string FONT{ "fonts/arial.ttf" };
@@ -18,17 +17,4 @@ namespace DEF_SETT {
 	// Labels color
 	const cocos2d::Color3B METALLIC_GOLD{ 212, 175, 55 };
 	const cocos2d::Color3B VIOLET{ 131, 55, 127 };
-
-
-
-	//// Side to move first
-	const cocos2d::Vec2 WHITE_SIDE_POS{ 790.0f, 550.0f };
-	const cocos2d::Vec2 BLACK_SIDE_POS{ 941.0f, 550.0f };
-	
-	// Log Messages
-	//// Game
-	const std::string NewGameString{ "New Game!" };
-	const std::string CastlingPerfomed{ "Castling is done: " };
-	const std::string CastlingShort{ "O-O  " };
-	
 }
