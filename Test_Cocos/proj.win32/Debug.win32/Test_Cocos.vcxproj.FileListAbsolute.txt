@@ -1,0 +1,2 @@
+D:\WAY\FreePlay\Test_Cocos\Test_Cocos\proj.win32\Debug.win32\Test_Cocos.exe
+D:\WAY\FreePlay\Test_Cocos\Test_Cocos\proj.win32\Debug.win32\Test_Cocos.pdb
