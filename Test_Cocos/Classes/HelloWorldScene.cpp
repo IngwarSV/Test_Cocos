@@ -306,70 +306,6 @@ bool HelloWorld::init()
     this->addChild(quitButton);
 
 
-
-
-
-
-
-
-
-    // 2. add a menu item with "X" image, which is clicked to quit the program
-    //    you may modify it.
-
-    //// add a "close" icon to exit the progress. it's an autorelease object
-    //auto closeItem = MenuItemImage::create(
-    //                                       "CloseNormal.png",
-    //                                       "CloseSelected.png",
-    //                                       CC_CALLBACK_1(HelloWorld::menuCloseCallback, this));
-
-    //if (closeItem == nullptr ||
-    //    closeItem->getContentSize().width <= 0 ||
-    //    closeItem->getContentSize().height <= 0)
-    //{
-    //    problemLoading("'CloseNormal.png' and 'CloseSelected.png'");
-    //}
-    //else
-    //{
-    //    float x = origin.x + visibleSize.width - closeItem->getContentSize().width/2;
-    //    float y = origin.y + closeItem->getContentSize().height/2;
-    //    closeItem->setPosition(Vec2(x,y));
-    //}
-
-    /////////////////////////////
-    // 3. add your codes below...
-
-    // add a label shows "Hello World"
-    // create and initialize a label
-
-    //auto label = Label::createWithTTF("Hello World", "fonts/Marker Felt.ttf", 24);
-    //if (label == nullptr)
-    //{
-    //    problemLoading("'fonts/Marker Felt.ttf'");
-    //}
-    //else
-    //{
-    //    // position the label on the center of the screen
-    //    label->setPosition(Vec2(origin.x + visibleSize.width/2,
-    //                            origin.y + visibleSize.height - label->getContentSize().height));
-
-    //    // add the label as a child to this layer
-    //    this->addChild(label, 1);
-    //}
-
-    //// add "HelloWorld" splash screen"
-    //auto sprite = Sprite::create("HelloWorld.png");
-    //if (sprite == nullptr)
-    //{
-    //    problemLoading("'HelloWorld.png'");
-    //}
-    //else
-    //{
-    //    // position the sprite on the center of the screen
-    //    sprite->setPosition(Vec2(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));
-
-    //    // add the sprite as a child to this layer
-    //    this->addChild(sprite, 0);
-    //}
     return true;
 }
 
@@ -386,9 +322,11 @@ bool HelloWorld::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event*)
     return false;
 }
 
-bool HelloWorld::checkCollision(Sprite* spriteToCheck, const std::array<cocos2d::Vec2, 4>& spriteToMoveVerts, Vec2 delta)
+bool HelloWorld::calculateCollision(Sprite* spriteToMove, Sprite* spriteToCheck, Vec2& newPosition, 
+    const std::array<cocos2d::Vec2, 4>& spriteToMoveVerts, Vec2 delta, int vertexToMove)
 {
     Rect staticBox = spriteToCheck->getBoundingBox();
+    Rect boxToMove = spriteToMove->getBoundingBox();
 
     std::array<Vec2, 4> staticBoxVerts;
     staticBoxVerts[0] = staticBox.origin;
@@ -396,22 +334,36 @@ bool HelloWorld::checkCollision(Sprite* spriteToCheck, const std::array<cocos2d:
     staticBoxVerts[2] = Vec2(staticBox.getMaxX(), staticBox.getMaxY());
     staticBoxVerts[3] = Vec2(staticBox.getMaxX(), staticBox.origin.y);
 
+   int staticVertex = (vertexToMove + 2) % 4;
 
-    for (int i = 0; i < 4; ++i) {
-        for (int j = 1; j < 5; ++j) {
-            if (Vec2::isSegmentIntersect(spriteToMoveVerts[i], spriteToMoveVerts[i] + delta,
-                staticBoxVerts[j - 1], staticBoxVerts[j % 4])) {
-                _spriteToCollide = spriteToCheck;
-                return true;
-            }
-        }
-    }
-    _spriteToCollide = nullptr;
+   for (int counter1 = 0; counter1 < 3; ++counter1) {
+       for (int counter2 = 0, nextStaticVertex = (staticVertex + 1) % 4; counter2 < 2; ++counter2) {
+           if (Vec2::isSegmentIntersect(spriteToMoveVerts[vertexToMove], spriteToMoveVerts[vertexToMove] + delta,
+               staticBoxVerts[staticVertex], staticBoxVerts[nextStaticVertex])) {
+               if (staticBoxVerts[staticVertex].x == staticBoxVerts[nextStaticVertex].x) {
+                   newPosition.x = (vertexToMove < 2) ?
+                       staticBox.getMaxX() + boxToMove.size.width / 2 + 1 :
+                       staticBox.getMinX() - boxToMove.size.width / 2 - 1;
+               }
+               else {
+                   newPosition.y = (vertexToMove == 0 || vertexToMove == 3) ?
+                       staticBox.getMaxY() + boxToMove.size.height / 2 + 1 :
+                       staticBox.getMinY() - boxToMove.size.height / 2 - 1;
+               }
+               _spriteToCollide = spriteToCheck;
+               return true;
+           }
+           nextStaticVertex = (staticVertex + 3) % 4;
+       }
+       vertexToMove = (counter1 == 1) ? (vertexToMove + 2) % 4 : (vertexToMove + 1) % 4;
+   }
 
-    return false;
+   _spriteToCollide = nullptr;
+
+   return false;
 }
 
-Vec2 HelloWorld::calculateCollision(Sprite* spriteToMove, Vec2 newPosition)
+Vec2 HelloWorld::checkCollision(Sprite* spriteToMove, Vec2 newPosition)
 {
     Rect boxToMove = spriteToMove->getBoundingBox();
     Vec2 delta{ newPosition.x - boxToMove.getMidX(), newPosition.y - boxToMove.getMidY() };
@@ -422,101 +374,31 @@ Vec2 HelloWorld::calculateCollision(Sprite* spriteToMove, Vec2 newPosition)
     boxToMoveVerts[2] = Vec2(boxToMove.getMaxX(), boxToMove.getMaxY());
     boxToMoveVerts[3] = Vec2(boxToMove.getMaxX(), boxToMove.origin.y);
 
-    bool isColliding = false;
-    if (_spriteToCollide) {
-        isColliding = checkCollision(_spriteToCollide, boxToMoveVerts, delta);
-    }
-
-    if (!isColliding) {
-        for (auto staticSprite : _v_sprites) {
-            if (staticSprite == _spriteToCollide)
-                continue;
-            if (checkCollision(staticSprite, boxToMoveVerts, delta)) {
-                isColliding = true;
-                break;
-            }
-        }
-    }
-
-    if (!isColliding)
-        return newPosition;
-    
-    
-    auto a = spriteToMove->getPosition();
-    
-    Rect staticBox = _spriteToCollide->getBoundingBox();
-   
-    /*if (delta.y == 0 && delta.x < 0) {
-        newPosition.x = staticBox.getMaxX() + boxToMove.size.width / 2 + 10;
-        return newPosition;
-    }
-    if (delta.y == 0 && delta.x > 0) {
-        newPosition.x = staticBox.getMinX() - boxToMove.size.width / 2 - 1;
-        return newPosition;
-    }
-    if (delta.x == 0 && delta.y < 0) {
-        newPosition.y = staticBox.getMaxY() + boxToMove.size.height / 2 + 1;
-        return newPosition;
-    }
-    if (delta.x == 0 && delta.y > 0) {
-        newPosition.y = staticBox.getMinY() - boxToMove.size.height / 2 - 1;
-        return newPosition;
-    }*/
-
-    //Rect staticBox = spriteToCheck->getBoundingBox();
-
-    std::array<Vec2, 4> staticBoxVerts;
-    staticBoxVerts[0] = staticBox.origin;
-    staticBoxVerts[1] = Vec2(staticBox.origin.x, staticBox.getMaxY());
-    staticBoxVerts[2] = Vec2(staticBox.getMaxX(), staticBox.getMaxY());
-    staticBoxVerts[3] = Vec2(staticBox.getMaxX(), staticBox.origin.y);
-
     int vertexToMove = 0;
-    int staticVertex = 2;
     if (delta.x <= 0 && delta.y >= 0) {
         vertexToMove = 1;
-
-    } else if (delta.x >= 0 && delta.y >= 0) {
+    }
+    else if (delta.x >= 0 && delta.y >= 0) {
         vertexToMove = 2;
     }
     else if (delta.x >= 0 && delta.y <= 0) {
         vertexToMove = 3;
     }
-    staticVertex = (vertexToMove + 2) % 4;
-
-    for (int counter1 = 0; counter1 < 3; ++counter1) {
-        for (int counter2 = 0, nextStaticVertex = (staticVertex + 1) % 4; counter2 < 2; ++counter2) {
-            if (Vec2::isSegmentIntersect(boxToMoveVerts[vertexToMove], boxToMoveVerts[vertexToMove] + delta,
-                staticBoxVerts[staticVertex], staticBoxVerts[nextStaticVertex])) {
-                if (staticBoxVerts[staticVertex].x == staticBoxVerts[nextStaticVertex].x) {
-                    newPosition.x = (vertexToMove < 2) ? 
-                            staticBox.getMaxX() + boxToMove.size.width / 2 + 1 :
-                            staticBox.getMinX() - boxToMove.size.width / 2 - 1;
-                }
-                else {
-                    newPosition.y = (vertexToMove == 0 || vertexToMove == 3) ?
-                        staticBox.getMaxY() + boxToMove.size.height / 2 + 1 :
-                        staticBox.getMinY() - boxToMove.size.height / 2 - 1;
-                }
-                return newPosition;
-            }
-            nextStaticVertex = (staticVertex + 3) % 4;
-        }
-        vertexToMove = (counter1 == 1) ? (vertexToMove + 2) % 4 : (vertexToMove + 1) % 4;
-    }
-   // _spriteToCollide = nullptr;
-
     
+    bool isColliding = false;
+    if (_spriteToCollide) {
+        isColliding = calculateCollision(spriteToMove, _spriteToCollide, newPosition, boxToMoveVerts, delta, vertexToMove);
+    }
 
-
-
-
-
-
-
-
-
-
+    if (!isColliding) {
+        for (auto staticSprite : _v_sprites) {
+            if (calculateCollision(spriteToMove, staticSprite, newPosition, boxToMoveVerts, delta, vertexToMove)) {
+                isColliding = true;
+                break;
+            }
+        }
+    }
+    
     return newPosition;
 }
 
@@ -527,10 +409,8 @@ void HelloWorld::onTouchMoved(cocos2d::Touch* touch, cocos2d::Event*)
 
     Vec2 newPosition = touch->getLocation();
 
-   
-
     if (_sprite3->getTag()) {
-        newPosition = calculateCollision(_sprite3, newPosition);
+        newPosition = checkCollision(_sprite3, newPosition);
     }
 
     if (newPosition.x < s_winSize.width / 3 + s_spriteSize.width / 2)
@@ -543,15 +423,6 @@ void HelloWorld::onTouchMoved(cocos2d::Touch* touch, cocos2d::Event*)
         newPosition.y = s_winSize.height - s_spriteSize.height / 2 - 1;
 
     _sprite3->setPosition(newPosition);
-
-
-
-
-
-
-
-
-
 }
 
 
@@ -568,11 +439,4 @@ void HelloWorld::menuCloseCallback(Ref* pSender)
 {
     //Close the cocos2d-x game scene and quit the application
     Director::getInstance()->end();
-
-    /*To navigate back to native iOS screen(if present) without quitting the application  ,do not use Director::getInstance()->end() as given above,instead trigger a custom event created in RootViewController.mm as below*/
-
-    //EventCustom customEndEvent("game_scene_close_event");
-    //_eventDispatcher->dispatchEvent(&customEndEvent);
-
-
 }

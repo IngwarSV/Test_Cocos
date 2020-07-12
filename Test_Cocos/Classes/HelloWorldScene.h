@@ -56,8 +56,9 @@ public:
     void onTouchEnded(cocos2d::Touch*, cocos2d::Event*);
     void onTouchMoved(cocos2d::Touch*, cocos2d::Event*);
 
-    bool checkCollision(cocos2d::Sprite* spriteToCheck, const std::array<cocos2d::Vec2, 4>& spriteToMoveVerts, cocos2d::Vec2 delta);
-    cocos2d::Vec2 calculateCollision(cocos2d::Sprite* spriteToMove, cocos2d::Vec2 newPosition);
+    bool calculateCollision(cocos2d::Sprite* spriteToMove, cocos2d::Sprite* spriteToCheck, cocos2d::Vec2& newPosition,
+        const std::array<cocos2d::Vec2, 4>& spriteToMoveVerts, cocos2d::Vec2 delta, int vertexToMove);
+    cocos2d::Vec2 checkCollision(cocos2d::Sprite* spriteToMove, cocos2d::Vec2 newPosition);
 
 
 
