@@ -17,7 +17,7 @@ HelloWorld::HelloWorld()
 	, mBTN3Mode(eBtnMode::INIT_MODE)
 {
 
-	
+
 }
 
 Scene* HelloWorld::createScene()
@@ -58,7 +58,7 @@ bool HelloWorld::init()
 			mWinSize.height * cThreeQuaters + mSpriteSize.height * cHalf };
 		mStatSprites.back()->setPosition(sprite1Position);
 		mStatSprites.back()->setAnchorPoint(Vec2::ANCHOR_TOP_RIGHT);
-		mStatSprBoxes[0]  = mStatSprites.back()->getBoundingBox();
+		mStatSprBoxes[0] = mStatSprites.back()->getBoundingBox();
 
 		////// Creating bounding box
 		auto drawNode1 = DrawNode::create();
@@ -177,7 +177,7 @@ bool HelloWorld::on3SpriteTouchBegan(cocos2d::Touch* aTouch, cocos2d::Event* aEv
 	bool sprite3IsTouched = mSprite3->getBoundingBox().containsPoint(aTouch->getLocation());
 
 
-	if (sprite3IsTouched )
+	if (sprite3IsTouched)
 	{
 		if (mSprite3->getColor() == Color3B::YELLOW
 			|| mSprite3->getColor() == mVioletColor)
@@ -221,7 +221,7 @@ void HelloWorld::on3SpriteTouchMoved(cocos2d::Touch* aTouch, cocos2d::Event* aEv
 					}
 					else
 					{
-						newDynamSprOrigin.y = std::min(statSprBox[0].y - dynamSprBox.size.height, newDynamSprOrigin.y);
+						newDynamSprOrigin.y = std::min(statSprBox[0].y - dynamSprBox.size.height - 1, newDynamSprOrigin.y);
 					}
 				}
 
@@ -247,7 +247,7 @@ void HelloWorld::on3SpriteTouchMoved(cocos2d::Touch* aTouch, cocos2d::Event* aEv
 				{
 					if (dynamMinX < statSprBox[0].x)
 					{
-						newDynamSprOrigin.x = std::min(statSprBox[0].x - dynamSprBox.size.width, newDynamSprOrigin.x);
+						newDynamSprOrigin.x = std::min(statSprBox[0].x - dynamSprBox.size.width - 1, newDynamSprOrigin.x);
 					}
 					else
 					{
@@ -271,6 +271,14 @@ void HelloWorld::on3SpriteTouchMoved(cocos2d::Touch* aTouch, cocos2d::Event* aEv
 				}
 
 			}
+			if ((statSprBox[0].x - dynamMinX == dynamSprBox.size.width + 1) &&
+				(statSprBox[0].y - dynamMinY == dynamSprBox.size.height + 1)) {
+				newDynamSprOrigin.x = statSprBox[0].x - dynamSprBox.size.width - 2;
+				newDynamSprOrigin.y = statSprBox[0].y - dynamSprBox.size.height - 2;
+			}
+
+
+
 		}
 		newDynamSprPos = Vec2(newDynamSprOrigin.x + dynamSprBox.size.width * cHalf, newDynamSprOrigin.y + dynamSprBox.size.height * cHalf);
 	}
@@ -331,7 +339,7 @@ void HelloWorld::on3SpriteTouchMoved(cocos2d::Touch* aTouch, cocos2d::Event* aEv
 	//}
 
 
-	
+
 	// checking playField boundaries (including distance to sprite3 center)
 	float leftEdge = (mWinSize.width * cOneThird) + mSpriteSize.width * cHalf;
 	float rightEdge = mWinSize.width - mSpriteSize.width * cHalf - cOnePixel;
