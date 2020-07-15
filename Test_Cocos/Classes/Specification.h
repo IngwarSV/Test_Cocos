@@ -1409,5 +1409,82 @@ void AppDelegate::applicationWillEnterForeground() {
 }
 
 
+///////////////////////////////////////////////
 
+{
+    "CurrentStageLabelStuff": {
+		"Text": "CURRENT STAGE: ",
+		"Font": "fonts/Marker Felt.ttf",
+		"FontSize": 40.0,
+		"TextColor": [
+        128,
+        0,
+        0
+		]
+	},
+	"BoardSize": {
+		"BoardSizeX": 9,
+		"BoardSizeY": 8
+	},
+	"QuitButtonStuff": {
+		"NormalImageFile": "quitIcon1.png",
+		"SelectedImageFile": "quitIcon2.png",
+		"ContentScale": 0.5
+	},
+	"NextStageButtonStuff": {
+		"NormalImageFile": "plank1.png",
+		"SelectedImageFile": "plank2.png",
+		"Font": "fonts/Marker Felt.ttf",
+		"FontSize": 18.0,
+		"ContentScale": 1.0,
+		"TitleText": "NEXT STAGE",
+		"TitleColor": [
+        212,
+        175,
+        55
+		]
+	},
+	"PrevStageButtonStuff": {
+		"NormalImageFile": "plank1.png",
+		"SelectedImageFile": "plank2.png",
+		"Font": "fonts/Marker Felt.ttf",
+		"FontSize": 18.0,
+		"ContentScale": 1.0,
+		"TitleText": "PREVIOUS STAGE",
+		"TitleColor": [
+        212,
+        175,
+        55
+		]
+	},
+	"Font": "fonts/arial.ttf",
+	"CellSideSize": 70.0,
+    "ActionDuration": 2,
+    "FontSize": 18,
+    "BackGroundImageFile": "background.png",
+    "Sprite1ImageFile": "block.png",
+    "Sprite2ImageFile": "main.png",
+    "Sprite3ImageFile": "cell3.png",
+    "QuitBTNNormalImageFile": "quitIcon1.png",
+    "QuitBTNSelectedImageFile": "quitIcon2.png",
+    "BTNNormalImageFile": "plank1.png",
+    "BTNSelectedImageFile": "plank2.png",
+    "METALLIC_GOLD": [
+        212,
+        175,
+        55
+    ],
+    "VIOLET": [
+        131,
+        55,
+        127
+    ],
+	"BoardSize/////": [{
+		"BoardSizeX": 9
+	},
+	{
+		"BoardSizeY": 8
+	}
+	]
+}
 
